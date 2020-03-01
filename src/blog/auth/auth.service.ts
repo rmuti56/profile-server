@@ -22,8 +22,41 @@ export class AuthService {
     }
 
     return await this.genToken(user);
-
   }
+
+  async facebookSignIn(facebookProfileDto) {
+    let user = await this.userRepository.findOne({ username: `facebook${facebookProfileDto.id}` });
+
+    if (!user) {
+      user = await this.userRepository.createUserByFackBook(facebookProfileDto);
+    }
+
+    return await this.genToken(user);
+  }
+
+  async githubSignIn(githubProfileDto) {
+    let user = await this.userRepository.findOne({ username: `github${githubProfileDto.id}` });
+
+    if (!user) {
+
+    }
+
+    return await this.genToken(user);
+  }
+
+
+  async googleSignIn(googleProfileDto) {
+    let user = await this.userRepository.findOne({ username: `google${googleProfileDto.id}` });
+
+    if (!user) {
+
+    }
+
+    return await this.genToken(user);
+  }
+
+
+
 
   async genToken(user: User): Promise<IToken> {
     const payload = { username: user.username, role: user.roles }

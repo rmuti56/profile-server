@@ -9,6 +9,9 @@ import { AuthController } from './auth.controller';
 import { UserService } from '../user/user.service';
 import { secret } from 'src/configs/secret.config';
 import { JwtStratygy } from './jwt.strategy';
+import { GithubStrategy } from './github.strategy';
+import { FacebookStrategy } from './facebook.strategy';
+import { GoogleStrategy } from './google.strategy';
 
 @Module({
   imports: [
@@ -21,7 +24,13 @@ import { JwtStratygy } from './jwt.strategy';
       }
     })
   ],
-  providers: [AuthService, UserService, JwtStratygy],
+  providers: [AuthService,
+    UserService,
+    JwtStratygy,
+    FacebookStrategy,
+    GoogleStrategy,
+    GithubStrategy
+  ],
   controllers: [AuthController]
 })
 export class AuthModule { }

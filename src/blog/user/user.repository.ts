@@ -46,6 +46,29 @@ export class UserRepository extends Repository<User>{
     }
   }
 
+  async createUserByFackBook(fackbookProfileDto): Promise<User> {
+    const user = new User();
+    user.username = `facebook${fackbookProfileDto.id}`;
+    user.email = fackbookProfileDto.emails[0]?.value;
+    user.firstname = fackbookProfileDto.name?.firstname;
+    user.lastname = fackbookProfileDto.name?.lastname;
+    user.imageProfile = fackbookProfileDto.photos[0]?.value;
+    user.salt = await bcrypt.genSalt();
+    user.password = await this.hashPassword(fackbookProfileDto.id, user.salt);
+    user.roles = UserRoles.USER;
+    user.status = UserStatus.ACTIVE;
+    try {
+      return await this.save(user);
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new ConflictException('Username already exists');
+      } else {
+        throw new InternalServerErrorException(error.name || error.code || error.message);
+      }
+    }
+
+  }
+
 
   private async hashPassword(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
