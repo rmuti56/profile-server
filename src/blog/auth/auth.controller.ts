@@ -42,14 +42,15 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  googleLoginCallback(@GetUser() user, @Res() res: Response) {
+  async googleLoginCallback(@GetUser() user, @Res() res: Response) {
     // handles the Google OAuth2 callback
-    const jwt: string = user.jwt;
-    if (jwt)
-      res.redirect('http://localhost:5000?token=' + jwt);
+    const token = await this.authService.googleSignIn(user);
+    if (token)
+      res.redirect(`http://localhost:5000/api?token=${token.accessToken}&refreshToken=${token.refreshToken}`);
     else
       res.redirect('http://localhost:5000');
   }
+
 
   @Get('github')
   @UseGuards(AuthGuard('github'))
@@ -59,11 +60,11 @@ export class AuthController {
 
   @Get('github/callback')
   @UseGuards(AuthGuard('github'))
-  githubLoginCallback(@GetUser() user, @Res() res) {
+  async  githubLoginCallback(@GetUser() user, @Res() res) {
     // handles the github  callback
-    const jwt: string = user.jwt;
-    if (jwt)
-      res.redirect('http://localhost:5000?token=' + jwt);
+    const token = await this.authService.githubSignIn(user);
+    if (token)
+      res.redirect(`http://localhost:5000/api?token=${token.accessToken}&refreshToken=${token.refreshToken}`);
     else
       res.redirect('http://localhost:5000');
   }

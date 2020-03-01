@@ -8,7 +8,7 @@ const port = process.env.PORT || 5500;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api')
+  //app.setGlobalPrefix('api')
   app.use(requestIp.mw());
   await app.listen(port);
   Logger.log(`Server running on port ${port}`)

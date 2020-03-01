@@ -19,16 +19,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google')
 
 
   async validate(request: any, accessToken: string, refreshToken: string, profile, done: Function) {
-    console.log(accessToken)
     try {
-      console.log(profile);
-
-      const jwt: string = 'placeholderJWT'
-      const user =
-      {
-        jwt
-      }
-
+      const user = profile
+      console.log(user)
       done(null, user);
     }
     catch (err) {

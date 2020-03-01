@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt'
 
 import { UserRoles } from "../auth/enum/roles.enum";
 import { UserStatus } from "./enum/user-status.enum";
+import { UserProvider } from "./enum/user.provider.enum";
 
 
 @Entity()
@@ -37,6 +38,9 @@ export class User extends BaseEntity {
 
   @Column({ type: 'varchar', length: 64 })
   roles: UserRoles;
+
+  @Column({ type: 'varchar', length: 64, default: UserProvider.local })
+  provider: UserProvider;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   salt: string

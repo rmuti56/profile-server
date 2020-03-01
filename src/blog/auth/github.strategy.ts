@@ -19,17 +19,10 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github')
 
 
   async validate(request: any, accessToken: string, refreshToken: string, profile, done: Function) {
-    console.log(accessToken)
     try {
-      console.log(profile);
-
-      const jwt: string = 'placeholderJWT'
-      const user =
-      {
-        jwt
-      }
-
+      const user = profile
       done(null, user);
+
     }
     catch (err) {
       // console.log(err)

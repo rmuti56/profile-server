@@ -6,7 +6,7 @@ import { Roles } from '../auth/roles.decorator';
 import { UserRoles } from '../auth/enum/roles.enum';
 import { RolesGuard } from '../auth/guard/roles.guard';
 
-@Controller('user')
+@Controller('api/user')
 export class UserController {
 
   @Get()

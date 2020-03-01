@@ -38,7 +38,7 @@ export class AuthService {
     let user = await this.userRepository.findOne({ username: `github${githubProfileDto.id}` });
 
     if (!user) {
-
+      user = await this.userRepository.createUserByGithub(githubProfileDto);
     }
 
     return await this.genToken(user);
@@ -49,7 +49,7 @@ export class AuthService {
     let user = await this.userRepository.findOne({ username: `google${googleProfileDto.id}` });
 
     if (!user) {
-
+      user = await this.userRepository.createUserByGoogle(googleProfileDto);
     }
 
     return await this.genToken(user);

@@ -8,6 +8,7 @@ import { UserStatus } from "./enum/user-status.enum";
 import { UserCredentailsDto } from "./dto/user-credentails.dto";
 import { ConflictException, InternalServerErrorException } from "@nestjs/common";
 import { UserSigninDto } from "../auth/dto/user-signin.dto";
+import { UserProvider } from "./enum/user.provider.enum";
 
 
 @EntityRepository(User)
@@ -53,20 +54,45 @@ export class UserRepository extends Repository<User>{
     user.firstname = fackbookProfileDto.name?.firstname;
     user.lastname = fackbookProfileDto.name?.lastname;
     user.imageProfile = fackbookProfileDto.photos[0]?.value;
+    user.provider = UserProvider.facebook;
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(fackbookProfileDto.id, user.salt);
     user.roles = UserRoles.USER;
     user.status = UserStatus.ACTIVE;
-    try {
-      return await this.save(user);
-    } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY') {
-        throw new ConflictException('Username already exists');
-      } else {
-        throw new InternalServerErrorException(error.name || error.code || error.message);
-      }
-    }
 
+    return await this.save(user);
+  }
+
+  async createUserByGithub(githubProfileDto): Promise<User> {
+    const user = new User();
+    user.username = `github${githubProfileDto.id}`;
+    user.email = githubProfileDto.emails[0]?.value;
+    user.firstname = githubProfileDto.name?.firstname;
+    user.lastname = githubProfileDto.name?.lastname;
+    user.imageProfile = githubProfileDto.photos[0]?.value;
+    user.provider = UserProvider.github;
+    user.salt = await bcrypt.genSalt();
+    user.password = await this.hashPassword(githubProfileDto.id, user.salt);
+    user.roles = UserRoles.USER;
+    user.status = UserStatus.ACTIVE;
+
+    return await this.save(user);
+  }
+
+
+  async createUserByGoogle(googleProfileDto): Promise<User> {
+    const user = new User();
+    user.username = `google${googleProfileDto.id}`;
+    user.firstname = googleProfileDto.name?.familyName;
+    user.lastname = googleProfileDto.name?.givenName;
+    user.imageProfile = googleProfileDto.photos[0]?.value;
+    user.provider = UserProvider.google;
+    user.salt = await bcrypt.genSalt();
+    user.password = await this.hashPassword(googleProfileDto.id, user.salt);
+    user.roles = UserRoles.USER;
+    user.status = UserStatus.ACTIVE;
+
+    return await this.save(user);
   }
 
 
