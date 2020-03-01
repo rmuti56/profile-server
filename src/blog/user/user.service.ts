@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { User } from './user.entity';
-import { UserRule } from '../auth/enum/rule.enum';
+import { UserRoles } from '../auth/enum/roles.enum';
 import { UserStatus } from './enum/user-status.enum';
 import { UserCredentailsDto } from './dto/user-credentails.dto';
 

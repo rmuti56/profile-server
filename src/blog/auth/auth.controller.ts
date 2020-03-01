@@ -1,4 +1,4 @@
-import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { UserCredentailsDto } from '../user/dto/user-credentails.dto';
 import { UserSigninDto } from './dto/user-signin.dto';
@@ -17,8 +17,9 @@ export class AuthController {
   }
 
   @Post('signin')
-  signIn(@Body(new ValidationPipe()) userSigninDto: UserSigninDto) {
-    console.log(userSigninDto);
+  @HttpCode(HttpStatus.OK)
+  async signIn(@Body(new ValidationPipe()) userSigninDto: UserSigninDto) {
+    return await this.authService.signIn(userSigninDto);
   }
 
 }

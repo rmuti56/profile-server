@@ -1,5 +1,7 @@
 import { Entity, BaseEntity, Unique, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm";
-import { UserRule } from "../auth/enum/rule.enum";
+import * as bcrypt from 'bcrypt'
+
+import { UserRoles } from "../auth/enum/roles.enum";
 import { UserStatus } from "./enum/user-status.enum";
 
 
@@ -32,7 +34,7 @@ export class User extends BaseEntity {
   imageProfile: string;
 
   @Column({ type: 'varchar', length: 64 })
-  rule: UserRule;
+  roles: UserRoles;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   salt: string
@@ -48,4 +50,9 @@ export class User extends BaseEntity {
 
   @Column("timestamp", { precision: 3, default: () => "CURRENT_TIMESTAMP(3)", onUpdate: "CURRENT_TIMESTAMP(3)" })
   updated: Date
+
+  async validatePassword(password: string): Promise<boolean> {
+    const hash = await bcrypt.hash(password, this.salt);
+    return hash === this.password;
+  }
 }

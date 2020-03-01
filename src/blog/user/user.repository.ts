@@ -3,10 +3,11 @@ import * as bcrypt from 'bcrypt'
 
 
 import { User } from './user.entity'
-import { UserRule } from "../auth/enum/rule.enum";
+import { UserRoles } from "../auth/enum/roles.enum";
 import { UserStatus } from "./enum/user-status.enum";
 import { UserCredentailsDto } from "./dto/user-credentails.dto";
 import { ConflictException, InternalServerErrorException } from "@nestjs/common";
+import { UserSigninDto } from "../auth/dto/user-signin.dto";
 
 
 @EntityRepository(User)
@@ -20,7 +21,7 @@ export class UserRepository extends Repository<User>{
     user.email = userDto.email;
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(userDto.password, user.salt);
-    user.rule = UserRule.USER;
+    user.roles = UserRoles.USER;
     user.status = UserStatus.ACTIVE;
     try {
       return await this.save(user);
@@ -33,6 +34,18 @@ export class UserRepository extends Repository<User>{
     }
 
   }
+
+  async validateUserPassword(userSigninDto: UserSigninDto): Promise<User> {
+    const { username, password } = userSigninDto;
+    const user = await this.findOne({ username })
+
+    if (user && await user.validatePassword(password)) {
+      return user
+    } else {
+      return null
+    }
+  }
+
 
   private async hashPassword(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
