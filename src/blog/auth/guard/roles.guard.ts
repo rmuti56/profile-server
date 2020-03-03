@@ -7,7 +7,7 @@ import { User } from "src/blog/user/user.entity";
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) { }
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<UserRoles[]>('roles', context.getHandler());
+    const roles = this.reflector.get<UserRoles[]>('roles', context.getHandler()) || this.reflector.get<UserRoles[]>('roles', context.getClass());
     if (!roles || roles.length === 0) {
       return true;
     }

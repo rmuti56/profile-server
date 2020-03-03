@@ -34,7 +34,6 @@ export class User extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   imageProfile: string;
 
-  @Column()
 
   @Column({ type: 'varchar', length: 64 })
   roles: UserRoles;

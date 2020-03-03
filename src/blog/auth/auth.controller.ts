@@ -27,11 +27,23 @@ export class AuthController {
   }
 
 
-  @UseGuards(AuthGuard('facebook-token'))
+
   @Get('facebook')
-  async getTokenAfterFacebookSignIn(@GetUser() user) {
+  @UseGuards(AuthGuard('facebook'))
+  async facebookLogin() {
     // return user
-    return await this.authService.facebookSignIn(user);
+    // return await this.authService.facebookSignIn(user);
+  }
+
+  @Get('facebook/callback')
+  @UseGuards(AuthGuard('facebook'))
+  async facebookLoginCallback(@GetUser() user, @Res() res: Response) {
+    // handles the Google OAuth2 callback
+    const token = await this.authService.facebookSignIn(user);
+    if (token)
+      res.redirect(`http://localhost:5000/api?token=${token.accessToken}&refreshToken=${token.refreshToken}`);
+    else
+      res.redirect('http://localhost:5000');
   }
 
   @Get('google')

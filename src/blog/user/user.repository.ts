@@ -50,10 +50,10 @@ export class UserRepository extends Repository<User>{
   async createUserByFackBook(fackbookProfileDto): Promise<User> {
     const user = new User();
     user.username = `facebook${fackbookProfileDto.id}`;
-    user.email = fackbookProfileDto.emails[0]?.value;
-    user.firstname = fackbookProfileDto.name?.firstname;
+    user.email = fackbookProfileDto.emails?.[0]?.value;
+    user.firstname = fackbookProfileDto.name?.firstname || fackbookProfileDto.displayName;
     user.lastname = fackbookProfileDto.name?.lastname;
-    user.imageProfile = fackbookProfileDto.photos[0]?.value;
+    user.imageProfile = fackbookProfileDto.photos?.[0]?.value;
     user.provider = UserProvider.facebook;
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(fackbookProfileDto.id, user.salt);
@@ -66,10 +66,10 @@ export class UserRepository extends Repository<User>{
   async createUserByGithub(githubProfileDto): Promise<User> {
     const user = new User();
     user.username = `github${githubProfileDto.id}`;
-    user.email = githubProfileDto.emails[0]?.value;
+    user.email = githubProfileDto.emails?.[0]?.value;
     user.firstname = githubProfileDto.name?.firstname;
     user.lastname = githubProfileDto.name?.lastname;
-    user.imageProfile = githubProfileDto.photos[0]?.value;
+    user.imageProfile = githubProfileDto.photos?.[0]?.value;
     user.provider = UserProvider.github;
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(githubProfileDto.id, user.salt);
@@ -85,7 +85,7 @@ export class UserRepository extends Repository<User>{
     user.username = `google${googleProfileDto.id}`;
     user.firstname = googleProfileDto.name?.familyName;
     user.lastname = googleProfileDto.name?.givenName;
-    user.imageProfile = googleProfileDto.photos[0]?.value;
+    user.imageProfile = googleProfileDto.photos?.[0]?.value;
     user.provider = UserProvider.google;
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(googleProfileDto.id, user.salt);
