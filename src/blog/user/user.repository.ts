@@ -36,9 +36,16 @@ export class UserRepository extends Repository<User>{
 
   }
 
+  async selectUser(username: string): Promise<User> {
+    return await this.findOne({
+      select: ['uid', 'firstname', 'lastname', 'username', 'salt', 'password', 'accessToken', 'refreshToken', 'roles'],
+      where: { username }
+    })
+  }
+
   async validateUserPassword(userSigninDto: UserSigninDto): Promise<User> {
     const { username, password } = userSigninDto;
-    const user = await this.findOne({ username })
+    const user = await this.selectUser(username);
 
     if (user && await user.validatePassword(password)) {
       return user
