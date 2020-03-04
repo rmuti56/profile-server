@@ -5,6 +5,7 @@ import { UserRoles } from "../auth/enum/roles.enum";
 import { UserStatus } from "./enum/user-status.enum";
 import { UserProvider } from "./enum/user.provider.enum";
 import { Post } from "../post/post.entity";
+import { LikePost } from "../post/post-like.entity";
 
 
 
@@ -14,6 +15,7 @@ export class User extends BaseEntity {
 
   @PrimaryGeneratedColumn()
   uid: number
+
 
   @OneToMany(type => Post, post => post.user, { eager: false })
   posts: Post[]
