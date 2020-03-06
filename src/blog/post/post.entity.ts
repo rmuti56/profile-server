@@ -24,20 +24,25 @@ export class Post extends BaseEntity {
     qb => qb.andWhere('like.liked = :liked', { liked: true }))
   likeCount: number
 
-
   @Column({ type: 'text' })
   textHtml: string;
 
   @Column({ type: 'varchar', length: 512 })
   title: string;
 
-  @Column({ type: 'varchar', length: 64 })
+  @Column({ type: 'text', nullable: true })
+  imageTitlePath: string;
+
+  @Column({ type: 'varchar', length: 1024, nullable: true })
+  description: string
+
+  @Column({ type: 'varchar', length: 64, nullable: true })
   category: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 0 })
   view: number;
 
-  @Column({ type: 'varchar', length: 30 })
+  @Column({ type: 'varchar', length: 30, default: PostStatus.ACTIVE })
   status: PostStatus
 
   @Column("timestamp", { precision: 3, default: () => "CURRENT_TIMESTAMP(3)" })

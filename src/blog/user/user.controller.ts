@@ -5,8 +5,9 @@ import { User } from './user.entity';
 import { Roles } from '../auth/roles.decorator';
 import { UserRoles } from '../auth/enum/roles.enum';
 import { RolesGuard } from '../auth/guard/roles.guard';
+import { prefixApi } from 'src/configs/constant.config';
 
-@Controller('api/user')
+@Controller(`${prefixApi}user`)
 export class UserController {
 
   @Get()

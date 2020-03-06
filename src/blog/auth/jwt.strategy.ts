@@ -21,11 +21,12 @@ export class JwtStratygy extends PassportStrategy(Strategy) {
   async validate(payload) {
     const { username } = payload;
 
-    const user = await this.userRepository.selectUser(username)
+    const user = await this.userRepository.findOne({ username })
 
     if (!user) {
       throw new UnauthorizedException();
     }
+
 
     return user
   }
