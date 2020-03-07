@@ -18,7 +18,7 @@ export class LikePost extends BaseEntity {
   @Column({ type: 'boolean', default: true })
   liked: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   created: Date
 
   @Column("timestamp", { precision: 3, default: () => "CURRENT_TIMESTAMP(3)", onUpdate: "CURRENT_TIMESTAMP(3)" })

@@ -24,10 +24,10 @@ export class Post extends BaseEntity {
     qb => qb.andWhere('like.liked = :liked', { liked: true }))
   likeCount: number
 
-  @RelationCount((post: Post) => post.likes, 'like',
-    qb => qb.andWhere('like.liked = :liked', { liked: true })
-      .andWhere('like.userId = :userId', { userId: 1 }))
-  liked: number
+  // @RelationCount((post: Post) => post.likes, 'like',
+  //   qb => qb.andWhere('like.liked = :liked', { liked: true })
+  //     .andWhere('like.userId = :userId', { userId: 1 }))
+  // liked: number
 
   // @RelationId((post: Post, ) => post.likes, 'like',
   //   qb => {

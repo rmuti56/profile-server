@@ -8,7 +8,10 @@ import { LikePostRepository } from "./post-like.repository";
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post>{
-
+  constructor(
+    @InjectRepository(LikePostRepository, 'blog')
+    private likePostRepository: LikePostRepository
+  ) { super() }
 
   async createPost(
     createPostDto: CreatePostDto,
@@ -29,10 +32,36 @@ export class PostRepository extends Repository<Post>{
     //   return this.filterLikes(posts);
     // }
 
-
     // .getQuery();
+    let query = this.createQueryBuilder('post')
+      .addSelect(subQuery => {
+        return subQuery
+          .select("COUNT(likes.userId)", "liked")
+          .from(LikePost, "likes")
+          .where('likes.userId = :userId', { userId: user.uid })
+          .andWhere('likes.postId = post_pid')
+      }, "isLiked")
+      .leftJoinAndSelect('post.user', 'user')
+      //.leftJoinAndSelect('post.likes', 'likes', 'likes.liked = TRUE')
+      .leftJoinAndSelect(subQuery => {
+        return subQuery
+          .select("likes.*")
+          .from(LikePost, "likes")
+          .addSelect('userLike.firstname', 'userLikeFirstName')
+          .addSelect('userLike.lastName', 'userLikeLastName')
+          .addSelect('userLike.uid', 'userLikeUid')
+          .addSelect('userLike.imageProfile', 'userLikeImageProfile')
+          .leftJoin('likes.user', 'userLike')
+          // .select('userLike')
+          // .from(User, 'userLike')
+          // .where('userLike.uid = likes.userId')
+          //  .leftJoinAndSelect('likes.user', 'userLike')
+          .limit(10)
+      }, "likes", "likes.postId = post.pid")
 
-
+    // return await query.getQuery();
+    const rowEntity = await query.getRawAndEntities();
+    return this.margeRowEntity(rowEntity);
     // let query = this.createQueryBuilder('post')
     //   .leftJoinAndSelect('post.user', 'user')
     //   .addSelect(`(${subQuery})`, "isLiked")
@@ -49,13 +78,20 @@ export class PostRepository extends Repository<Post>{
     // var manager = this.createQueryBuilder("tipos_derechos")
     //   .leftJoinAndSelect('tipos_derechos.derechos', 'derechos')
     //.loadRelationCountAndMap('tipos_derechos.derechos_count', 'tipos_derechos.derechos')
-    posts = await this.find({
-      order: {
-        pid: 'DESC'
-      },
-    });
+    // posts = await this.find({
+    //   order: {
+    //     pid: 'DESC'
+    //   },
+    // });
 
-    return this.filterLikes(posts, user);
+    // return this.filterLikes(posts, user);
+  }
+
+  margeRowEntity(rowEntity): Post[] {
+    let posts: Post[]
+    let rows = rowEntity.rows;
+    posts = rowEntity.entities;
+    return posts;
   }
 
   filterLikes(posts: Post[], user?: User): Post[] {
