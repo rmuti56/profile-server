@@ -37,7 +37,11 @@ export class PostService {
     likePost.liked = !likePost.liked;
     likePost.user = user;
     likePost.post = post;
-    return await this.likePostRepository.save(likePost);
+    const newLikePost = await this.likePostRepository.save(likePost);
+    return await this.likePostRepository.findOne({
+      post: newLikePost.post,
+      user: user
+    })
   }
 
 

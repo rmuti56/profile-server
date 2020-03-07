@@ -11,7 +11,7 @@ export class LikePost extends BaseEntity {
   @JoinColumn({ name: "userId" })
   user: User;
 
-  @ManyToOne(type => Post, post => post.likes, { onUpdate: 'CASCADE', onDelete: 'CASCADE', primary: true, eager: false })
+  @ManyToOne(type => Post, post => post.likes, { onUpdate: 'CASCADE', onDelete: 'CASCADE', primary: true, eager: true })
   @JoinColumn({ name: "postId" })
   post: Post
 

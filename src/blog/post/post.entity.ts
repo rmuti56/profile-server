@@ -17,7 +17,7 @@ export class Post extends BaseEntity {
   @JoinColumn({ name: "userId" })
   user: User
 
-  @OneToMany(type => LikePost, likePost => likePost.post, { eager: true })
+  @OneToMany(type => LikePost, likePost => likePost.post, { eager: false })
   likes: LikePost[]
 
   @RelationCount((post: Post) => post.likes, 'like',

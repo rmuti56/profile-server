@@ -109,8 +109,8 @@ export class PostRepository extends Repository<Post>{
             imageProfile: raw.userLikeImageProfile
           }
         }
-        const post = posts
-          .find(post => post.pid === raw.post_pid)
+        const post = posts.find(post => post.pid === raw.post_pid)
+        post.isLiked = !!Number(raw.isLiked);
         if (post.likes) {
           post.likes.push(likePost)
         } else {
