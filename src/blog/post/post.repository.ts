@@ -24,25 +24,28 @@ export class PostRepository extends Repository<Post>{
   }
 
   async getPosts(
-    user?: User
-  ): Promise<any> {
-    let posts: Post[];
+    user?: User,
+    skip = 0,
+    take = 20
+  ): Promise<Post[]> {
     // if (!user) {
     //   posts = await this.find({ skip: 0, take: 10 })
     //   return this.filterLikes(posts);
     // }
 
-    // .getQuery();
     let query = this.createQueryBuilder('post')
-      .addSelect(subQuery => {
+
+    if (user) {
+      query.addSelect(subQuery => {
         return subQuery
           .select("COUNT(likes.userId)", "liked")
           .from(LikePost, "likes")
           .where('likes.userId = :userId', { userId: user.uid })
           .andWhere('likes.postId = post_pid')
       }, "isLiked")
-      .leftJoinAndSelect('post.user', 'user')
-      //.leftJoinAndSelect('post.likes', 'likes', 'likes.liked = TRUE')
+    }
+
+    query.leftJoinAndSelect('post.user', 'user')
       .leftJoinAndSelect(subQuery => {
         return subQuery
           .select("likes.*")
@@ -56,12 +59,16 @@ export class PostRepository extends Repository<Post>{
           // .from(User, 'userLike')
           // .where('userLike.uid = likes.userId')
           //  .leftJoinAndSelect('likes.user', 'userLike')
-          .limit(10)
-      }, "likes", "likes.postId = post.pid")
+          .skip(0)
+          .take(10)
+      }, "likes", "likes.postId = post.pid and likes.liked=TRUE")
+      .orderBy("post.pid", "DESC")
+      .skip(skip)
+      .take(take)
 
     // return await query.getQuery();
-    const rowEntity = await query.getRawAndEntities();
-    return this.margeRowEntity(rowEntity);
+    const rawEntity = await query.getRawAndEntities();
+    return this.margeRowEntity(rawEntity);
     // let query = this.createQueryBuilder('post')
     //   .leftJoinAndSelect('post.user', 'user')
     //   .addSelect(`(${subQuery})`, "isLiked")
@@ -87,10 +94,30 @@ export class PostRepository extends Repository<Post>{
     // return this.filterLikes(posts, user);
   }
 
-  margeRowEntity(rowEntity): Post[] {
-    let posts: Post[]
-    let rows = rowEntity.rows;
-    posts = rowEntity.entities;
+  margeRowEntity(rawEntity): Post[] {
+    let posts;
+    let raws = rawEntity.raw;
+    posts = rawEntity.entities;
+    raws.forEach(raw => {
+      if (raw.userLikeUid) {
+        let likePost = {
+          timestamp: raw.timestamp,
+          user: {
+            uid: raw.userLikeUid,
+            firstname: raw.userLikeFirstName,
+            lastname: raw.userLikeLastName,
+            imageProfile: raw.userLikeImageProfile
+          }
+        }
+        const post = posts
+          .find(post => post.pid === raw.post_pid)
+        if (post.likes) {
+          post.likes.push(likePost)
+        } else {
+          post.likes = [likePost]
+        }
+      }
+    })
     return posts;
   }
 

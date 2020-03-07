@@ -20,7 +20,7 @@ export class User extends BaseEntity {
   @OneToMany(type => Post, post => post.user, { eager: false })
   posts: Post[]
 
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 50, select: false })
   username: string
 
   @Column({ type: 'varchar', length: 512, nullable: true, select: false })
@@ -61,7 +61,7 @@ export class User extends BaseEntity {
   created: Date
 
   @Column("timestamp", { precision: 3, default: () => "CURRENT_TIMESTAMP(3)", onUpdate: "CURRENT_TIMESTAMP(3)" })
-  updated: Date
+  timestamp: Date
 
   async validatePassword(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);
