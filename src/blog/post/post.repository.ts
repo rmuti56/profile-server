@@ -5,6 +5,7 @@ import { User } from "../user/user.entity";
 import { LikePost } from "./post-like.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { LikePostRepository } from "./post-like.repository";
+import { PostStatus } from "./enum/post-status.enum";
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post>{
@@ -12,6 +13,13 @@ export class PostRepository extends Repository<Post>{
     @InjectRepository(LikePostRepository, 'blog')
     private likePostRepository: LikePostRepository
   ) { super() }
+
+  async getMyPost(
+    user: User,
+    pid: number
+  ): Promise<Post> {
+    return await this.findOne({ user: user, pid });
+  }
 
   async createPost(
     createPostDto: CreatePostDto,
@@ -28,10 +36,6 @@ export class PostRepository extends Repository<Post>{
     skip = 0,
     take = 20
   ): Promise<Post[]> {
-    // if (!user) {
-    //   posts = await this.find({ skip: 0, take: 10 })
-    //   return this.filterLikes(posts);
-    // }
 
     let query = this.createQueryBuilder('post')
 
@@ -55,13 +59,10 @@ export class PostRepository extends Repository<Post>{
           .addSelect('userLike.uid', 'userLikeUid')
           .addSelect('userLike.imageProfile', 'userLikeImageProfile')
           .leftJoin('likes.user', 'userLike')
-          // .select('userLike')
-          // .from(User, 'userLike')
-          // .where('userLike.uid = likes.userId')
-          //  .leftJoinAndSelect('likes.user', 'userLike')
           .skip(0)
           .take(10)
       }, "likes", "likes.postId = post.pid and likes.liked=TRUE")
+      .where('post.status = :status', { status: PostStatus.ACTIVE })
       .orderBy("post.pid", "DESC")
       .skip(skip)
       .take(take)
@@ -69,29 +70,7 @@ export class PostRepository extends Repository<Post>{
     // return await query.getQuery();
     const rawEntity = await query.getRawAndEntities();
     return this.margeRowEntity(rawEntity);
-    // let query = this.createQueryBuilder('post')
-    //   .leftJoinAndSelect('post.user', 'user')
-    //   .addSelect(`(${subQuery})`, "isLiked")
-    //   .having("post.title = :title", { title: "test title post first post" })
-    // .leftJoinAndMapMany(
-    //   "post.likes",
-    //   qb => qb.from(LikePost, "likes"),
-    //   "likes",
-    //   "likes.userId = :userId", { userId: user.uid })
 
-    // return await query.getMany();
-
-
-    // var manager = this.createQueryBuilder("tipos_derechos")
-    //   .leftJoinAndSelect('tipos_derechos.derechos', 'derechos')
-    //.loadRelationCountAndMap('tipos_derechos.derechos_count', 'tipos_derechos.derechos')
-    // posts = await this.find({
-    //   order: {
-    //     pid: 'DESC'
-    //   },
-    // });
-
-    // return this.filterLikes(posts, user);
   }
 
   margeRowEntity(rawEntity): Post[] {

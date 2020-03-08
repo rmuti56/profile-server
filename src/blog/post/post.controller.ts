@@ -1,4 +1,4 @@
-import { Controller, Body, Post, UseGuards, ValidationPipe, HttpCode, HttpStatus, Get } from '@nestjs/common';
+import { Controller, Body, Post, UseGuards, ValidationPipe, HttpCode, HttpStatus, Get, Patch } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { CreatePostDto } from './dto/create-post.dto';
@@ -7,8 +7,7 @@ import { User } from '../user/user.entity';
 import { GetUser } from '../auth/get-user.decorator';
 import { PostService } from './post.service';
 import { prefixApi } from 'src/configs/constant.config';
-import { IsString } from 'class-validator';
-import { isString } from 'util';
+import { UpdatePostDto } from './dto/update-post.dto'
 
 @Controller(`${prefixApi}post`)
 export class PostController {
@@ -35,6 +34,15 @@ export class PostController {
     @GetUser() user: User,
     @Body(new ValidationPipe()) createPostDto: CreatePostDto) {
     return this.postService.createPost(createPostDto, user);
+  }
+
+  @Patch()
+  @UseGuards(AuthGuard('jwt'))
+  updatePost(
+    @GetUser() user: User,
+    @Body(new ValidationPipe()) updatePostDto: UpdatePostDto
+  ) {
+    return this.postService.updatePost(updatePostDto, user)
   }
 
   @Post('like')

@@ -1,11 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { User } from '../user/user.entity';
 import { Post } from './post.entity';
 import { LikePostRepository } from './post-like.repository';
 import { LikePost } from './post-like.entity';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostService {
@@ -21,6 +23,26 @@ export class PostService {
     user: User
   ): Promise<Post> {
     return await this.postRepository.createPost(createPostDto, user);
+  }
+
+
+  async updatePost(
+    updatePostDto: UpdatePostDto,
+    user: User
+  ): Promise<Post> {
+    const post = await this.postRepository.getMyPost(user, updatePostDto.pid);
+
+    if (!post) {
+      throw new NotFoundException(`User post with Id ${updatePostDto.pid} not found`)
+    }
+
+    Object.keys(new UpdatePostDto()).forEach(key => {
+      if (key != 'pid' && updatePostDto[key])
+        post[key] = updatePostDto[key]
+    })
+    post.updated = new Date();
+
+    return await this.postRepository.save(post);
   }
 
   async likePost(

@@ -5,6 +5,7 @@ import {
 import { PostStatus } from "./enum/post-status.enum";
 import { User } from "../user/user.entity";
 import { LikePost } from "./post-like.entity";
+import { Comment } from '../comment/comment.entity'
 
 
 @Entity()
@@ -22,19 +23,15 @@ export class Post extends BaseEntity {
 
   @RelationCount((post: Post) => post.likes, 'like',
     qb => qb.andWhere('like.liked = :liked', { liked: true }))
-  likeCount: number
+  likeCount: number;
 
-  // @RelationCount((post: Post) => post.likes, 'like',
-  //   qb => qb.andWhere('like.liked = :liked', { liked: true })
-  //     .andWhere('like.userId = :userId', { userId: 1 }))
-  // liked: number
+  @OneToMany(type => Comment, comment => comment.post, { eager: false })
+  comments: Comment[]
 
-  // @RelationId((post: Post, ) => post.likes, 'like',
-  //   qb => {
-  //     return qb.andWhere('like.liked = :liked', { liked: true })
-  //       .andWhere('like.userId = :userId', { userId: 1 })
-  //   })
-  // liked: boolean
+  @RelationCount((post: Post) => post.comments, 'comment',
+    qb => qb.where('comment.status = :status', { status: PostStatus.ACTIVE })
+  )
+  commentCount: number;
 
   @Column({ type: 'text' })
   textHtml: string;
