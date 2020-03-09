@@ -18,7 +18,7 @@ export class PostRepository extends Repository<Post>{
     user: User,
     pid: number
   ): Promise<Post> {
-    return await this.findOne({ user: user, pid });
+    return await this.findOne({ user, pid });
   }
 
   async createPost(

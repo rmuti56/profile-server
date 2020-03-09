@@ -1,0 +1,4 @@
+export enum ENotiLike {
+  LIKEPOST = "LIKEPOST",
+  LIKECOMMENT = "LIKECOMMENT"
+}

@@ -2,7 +2,7 @@ import { Entity, BaseEntity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Colu
 import { User } from "../user/user.entity";
 import { Post } from "../post/post.entity";
 import { PostStatus } from "../post/enum/post-status.enum";
-import { LikeComment } from "./commnet-like.entity";
+import { LikeComment } from "./comment-like.entity";
 
 
 @Entity()

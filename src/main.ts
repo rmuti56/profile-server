@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import * as requestIp from 'request-ip';
 import { Logger } from '@nestjs/common';
+
+import { AppModule } from './app.module';
 import { TransformInterceptor } from './shared/transform.interceptor';
 import { AllExceptionsFilter } from './shared/exceptions.filter';
 

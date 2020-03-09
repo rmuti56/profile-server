@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from "typeorm";
-import { LikeComment } from "./commnet-like.entity";
+import { LikeComment } from "./comment-like.entity";
 
 
 @EntityRepository(LikeComment)
