@@ -1,4 +1,4 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Entity, BaseEntity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, RelationCount } from "typeorm";
 import { User } from "../user/user.entity";
 import { Post } from "../post/post.entity";
 import { PostStatus } from "../post/enum/post-status.enum";
@@ -21,6 +21,10 @@ export class Comment extends BaseEntity {
 
   @OneToMany(type => LikeComment, likeComment => likeComment.comment, { eager: false })
   likes: LikeComment[];
+
+  @RelationCount((comment: Comment) => comment.likes, 'like',
+    qb => qb.andWhere('like.liked = :liked', { liked: true }))
+  likeCount: number;
 
   @Column({ type: 'text', nullable: true })
   text: string;

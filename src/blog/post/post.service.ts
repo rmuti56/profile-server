@@ -38,12 +38,12 @@ export class PostService {
   }
 
   async likePost(
-    postId: string,
+    pid: number,
     user: User
   ): Promise<LikePost> {
-    const post = await this.postRepository.findOne(postId);
+    const post = await this.postRepository.findOne({ pid });
     if (!post) {
-      throw new NotFoundException(`Post with Id ${postId} not found`)
+      throw new NotFoundException(`Post with Id ${pid} not found`)
     }
 
     const newLikePost = await this.likePostRepository.likePost(user, post);

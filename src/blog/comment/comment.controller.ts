@@ -29,4 +29,13 @@ export class CommentController {
   ) {
     return this.commentService.updateComment(user, updateCommentDto);
   }
+
+  @Post('/like')
+  @UseGuards(AuthGuard('jwt'))
+  likeComment(
+    @GetUser() user: User,
+    @Body('cid') cid: number
+  ) {
+    return this.commentService.likeComment(cid, user);
+  }
 }

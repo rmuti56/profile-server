@@ -50,10 +50,10 @@ export class PostController {
   @UseGuards(AuthGuard('jwt'))
   likePost(
     @GetUser() user: User,
-    @Body('postId') postId: string
+    @Body('pid') pid: number
 
   ) {
-    return this.postService.likePost(postId, user);
+    return this.postService.likePost(pid, user);
 
   }
 }
