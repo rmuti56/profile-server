@@ -1,8 +1,10 @@
-import { IsString, IsOptional, MinLength, MaxLength, IsNumber, IsNumberString } from "class-validator";
+import { IsString, IsOptional, MinLength, MaxLength, IsNumber } from "class-validator";
+import { Type } from 'class-transformer'
 
 export class UpdatePostDto {
 
-  @IsNumberString()
+  @Type(() => Number)
+  @IsNumber()
   pid: number;
 
   @IsOptional()

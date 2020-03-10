@@ -31,18 +31,10 @@ export class PostService {
     user: User
   ): Promise<Post> {
     const post = await this.postRepository.getMyPost(user, updatePostDto.pid);
-
     if (!post) {
       throw new NotFoundException(`User post with Id ${updatePostDto.pid} not found`)
     }
-
-    Object.keys(new UpdatePostDto()).forEach(key => {
-      if (key != 'pid' && updatePostDto[key])
-        post[key] = updatePostDto[key]
-    })
-    post.updated = new Date();
-
-    return await this.postRepository.save(post);
+    return await this.postRepository.updatePost(post, updatePostDto);
   }
 
   async likePost(
@@ -50,16 +42,11 @@ export class PostService {
     user: User
   ): Promise<LikePost> {
     const post = await this.postRepository.findOne(postId);
-
     if (!post) {
       throw new NotFoundException(`Post with Id ${postId} not found`)
     }
 
-    const likePost = await this.likePostRepository.findOne({ user, post }) || new LikePost();
-    likePost.liked = !likePost.liked;
-    likePost.user = user;
-    likePost.post = post;
-    const newLikePost = await this.likePostRepository.save(likePost);
+    const newLikePost = await this.likePostRepository.likePost(user, post);
     return await this.likePostRepository.findOne({
       post: newLikePost.post,
       user: user

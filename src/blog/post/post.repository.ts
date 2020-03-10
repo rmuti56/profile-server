@@ -6,6 +6,7 @@ import { LikePost } from "./post-like.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { LikePostRepository } from "./post-like.repository";
 import { PostStatus } from "./enum/post-status.enum";
+import { UpdatePostDto } from "./dto/update-post.dto";
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post>{
@@ -26,8 +27,23 @@ export class PostRepository extends Repository<Post>{
     user: User
   ): Promise<Post> {
     const post = new Post();
-    Object.keys(createPostDto).forEach(key => post[key] = createPostDto[key])
+    post.textHtml = createPostDto.textHtml;
+    post.title = createPostDto.title;
+    post.imageTitlePath = createPostDto.imageTitlePath;
+    post.description = createPostDto.description;
     post.user = user;
+    return await this.save(post);
+  }
+
+  async updatePost(
+    post: Post,
+    updatePostDto: UpdatePostDto
+  ): Promise<Post> {
+    post.textHtml = updatePostDto.textHtml || post.textHtml;
+    post.title = updatePostDto.title || post.title;
+    post.imageTitlePath = updatePostDto.imageTitlePath || post.imageTitlePath;
+    post.description = updatePostDto.description || post.description;
+    post.updated = new Date();
     return await this.save(post);
   }
 
