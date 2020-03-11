@@ -13,20 +13,20 @@ export class NotificationLike extends BaseEntity {
   @JoinColumn({ name: "userId" })
   user: User;
 
+  @ManyToOne(type => Comment, { nullable: true, eager: true })
+  @JoinColumn({ name: 'commentId' })
+  comment: Comment;
+
+  @ManyToOne(type => Post, { nullable: true, eager: true })
+  @JoinColumn({ name: 'postId' })
+  post: Post;
+
+
   @Column({ type: 'boolean', default: true })
   unread: boolean;
 
   @Column({ type: 'varchar', length: 30 })
   typeLike: ENotiLike;
-
-  @OneToOne(type => Comment, { nullable: true })
-  @JoinColumn({ name: 'commentId' })
-  comment: Comment;
-
-
-  @OneToOne(type => Post, { nullable: true })
-  @JoinColumn({ name: 'postId' })
-  post: Post;
 
   @CreateDateColumn()
   created: Date;

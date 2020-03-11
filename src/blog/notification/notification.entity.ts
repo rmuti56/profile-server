@@ -25,6 +25,9 @@ export class Notification extends BaseEntity {
   @Column({ type: 'varchar', length: 30 })
   notiType: ENotiType;
 
+  @Column({ type: 'boolean', default: true })
+  unread: boolean;
+
 
   @CreateDateColumn()
   created: Date;

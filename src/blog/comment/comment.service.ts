@@ -8,6 +8,9 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './comment.entity';
 import { LikeCommentRepository } from './comment-like.repository';
+import { NotificationComment } from '../notification/notification-comment.entity';
+import { NotificationService } from '../notification/notification.service';
+import { ENotiLike } from '../notification/enum/notification-like.enum';
 
 @Injectable()
 export class CommentService {
@@ -17,7 +20,8 @@ export class CommentService {
     @InjectRepository(PostRepository, 'blog')
     private postRepository: PostRepository,
     @InjectRepository(LikeCommentRepository, 'blog')
-    private likeCommentRepository: LikeCommentRepository
+    private likeCommentRepository: LikeCommentRepository,
+    private notificationService: NotificationService,
   ) { }
 
   async createComment(user: User, createCommentDto: CreateCommentDto): Promise<Comment> {
@@ -29,7 +33,10 @@ export class CommentService {
       throw new NotFoundException(`Post with Id ${createCommentDto.pid} not found`)
     }
     //ตรงนี้ต้องมีแจ้งเตือนคอมเม้น 
-    return await this.commentRepository.createComment(user, post, createCommentDto);
+    const comment = await this.commentRepository.createComment(user, post, createCommentDto);
+    console.log('test')
+    await this.notificationService.createNotificationComment(user, comment)
+    return comment;
   }
 
   async updateComment(user: User, updateCommentDto: UpdateCommentDto): Promise<Comment> {
@@ -50,6 +57,9 @@ export class CommentService {
     }
 
     const newLikeComment = await this.likeCommentRepository.likeComment(user, comment);
+    if (newLikeComment.liked) {
+      this.notificationService.createNotificationLike(user, ENotiLike.LIKECOMMENT, newLikeComment.comment);
+    }
     return await this.likeCommentRepository.findOne({
       comment: newLikeComment.comment,
       user: user
