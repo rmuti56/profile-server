@@ -15,7 +15,7 @@ export class Comment extends BaseEntity {
   @JoinColumn({ name: "userId" })
   user: User;
 
-  @ManyToOne(type => Post, post => post.comments, { onUpdate: 'CASCADE', onDelete: 'CASCADE', eager: false })
+  @ManyToOne(type => Post, post => post.comments, { onUpdate: 'CASCADE', onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: "postId" })
   post: Post;
 
@@ -40,4 +40,6 @@ export class Comment extends BaseEntity {
 
   @UpdateDateColumn({ type: 'timestamp' })
   timestamp: Date;
+
+  isLiked?: boolean;
 }

@@ -11,6 +11,7 @@ import { LikeCommentRepository } from './comment-like.repository';
 import { NotificationComment } from '../notification/notification-comment.entity';
 import { NotificationService } from '../notification/notification.service';
 import { ENotiLike } from '../notification/enum/notification-like.enum';
+import { GetCommentDto } from './dto/get-comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -24,6 +25,10 @@ export class CommentService {
     private notificationService: NotificationService,
   ) { }
 
+  async getCommentsByPostId(getCommentDto: GetCommentDto, user?: User) {
+    return await this.commentRepository.getCommentBycommentId(getCommentDto.pid, user);
+  }
+
   async createComment(user: User, createCommentDto: CreateCommentDto): Promise<Comment> {
     if (!createCommentDto.imageComment && !createCommentDto.text) {
       throw new BadRequestException(`comment is required text or image`)
@@ -34,7 +39,6 @@ export class CommentService {
     }
     //ตรงนี้ต้องมีแจ้งเตือนคอมเม้น 
     const comment = await this.commentRepository.createComment(user, post, createCommentDto);
-    console.log('test')
     await this.notificationService.createNotificationComment(user, comment)
     return comment;
   }
